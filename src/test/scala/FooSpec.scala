@@ -1,6 +1,8 @@
 import org.scalatest.flatspec._
 import org.scalatest.matchers._
 
+import scala.annotation.tailrec
+
 class FooSpec extends AnyFlatSpec with should.Matchers {
 
   val listA = List(1, 2)
@@ -21,6 +23,7 @@ class FooSpec extends AnyFlatSpec with should.Matchers {
 
   def combosTail(listOfLists: List[List[Int]]): List[List[Int]] = {
     def combine = (next: List[Int], acc: List[List[Int]]) => acc.flatMap(i => next.map(j => i :+ j))
+    @tailrec
     def combosTailRec(next: List[Int], rest: List[List[Int]], acc: List[List[Int]]): List[List[Int]] = {
       if (rest.isEmpty) {
         combine(next, acc)
