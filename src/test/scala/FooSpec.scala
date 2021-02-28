@@ -19,6 +19,33 @@ class FooSpec extends AnyFlatSpec with should.Matchers {
     f(one, two).flatMap(perm => three.map(third => perm :+ third))
   }
 
+  def combosTail(listOfLists: List[List[Int]]): List[List[Int]] = {
+    def combine = (next: List[Int], acc: List[List[Int]]) => acc.flatMap(i => next.map(j => i :+ j))
+    def combosTailRec(next: List[Int], rest: List[List[Int]], acc: List[List[Int]]): List[List[Int]] = {
+      if (rest.isEmpty) {
+        combine(next, acc)
+      } else {
+        combosTailRec(rest.head, rest.tail, combine(next, acc))
+      }
+    }
+
+    listOfLists match {
+      case Nil => List(List())
+      case one :: Nil => one.map(List(_))
+      case one :: two :: tail => combosTailRec(two, tail, one.map(List(_)))
+    }
+  }
+
+  "combosTailRec" should "permutate" in  {
+    combosTail(List(listA, listB, listC)) should equal(
+      List(
+        List(1, 3, 5), List(1, 3, 6),
+        List(1, 4, 5), List(1, 4, 6),
+        List(2, 3, 5), List(2, 3, 6),
+        List(2, 4, 5), List(2, 4, 6)
+      ))
+  }
+
   def combos(listOfLists: List[List[Int]]): List[List[Int]] = {
     listOfLists match {
       case Nil => List(List())
@@ -27,6 +54,7 @@ class FooSpec extends AnyFlatSpec with should.Matchers {
       case head :+ last => for (h <- combos(head); l <- last) yield h :+ l
     }
   }
+
 
   "f" should "permutate" in {
     f(listA, listB) should equal(
@@ -45,6 +73,7 @@ class FooSpec extends AnyFlatSpec with should.Matchers {
         List(2, 4, 5), List(2, 4, 6)
       ))
   }
+
 
   "combos" should "permutate" in {
     combos(List(listA, listB, listC)) should equal(
