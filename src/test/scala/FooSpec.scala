@@ -22,7 +22,10 @@ class FooSpec extends AnyFlatSpec with should.Matchers {
   }
 
   def combosTail(listOfLists: List[List[Int]]): List[List[Int]] = {
-    def combine = (next: List[Int], acc: List[List[Int]]) => acc.flatMap(i => next.map(j => i :+ j))
+    def combine(next: List[Int], acc: List[List[Int]]): List[List[Int]] = {
+      next.permutations.toList.flatMap(i=>acc .map (j=>j++i))
+    }
+
     @tailrec
     def combosTailRec(next: List[Int], rest: List[List[Int]], acc: List[List[Int]]): List[List[Int]] = {
       if (rest.isEmpty) {
@@ -33,14 +36,14 @@ class FooSpec extends AnyFlatSpec with should.Matchers {
     }
 
     listOfLists match {
-      case Nil => List(List())
-      case one :: Nil => one.map(List(_))
-      case one :: two :: tail => combosTailRec(two, tail, one.map(List(_)))
+      case Nil => Nil
+      case one :: Nil => one.permutations.toList
+      case one :: two :: tail => combosTailRec(two, tail, one.permutations.toList)
     }
   }
 
-  "combosTailRec" should "permutate" in  {
-    combosTail(List(listA, listB, listC)) should equal(
+  "combosTailRec" should "permutate" in {
+    combosTail(List(listA ,listB)) should equal(
       List(
         List(1, 3, 5), List(1, 3, 6),
         List(1, 4, 5), List(1, 4, 6),
